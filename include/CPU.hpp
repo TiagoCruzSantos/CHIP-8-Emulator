@@ -2,7 +2,7 @@
 #define _CPU_
 #include <iostream>
 #include <fstream>
-#include <vector>
+#include <stack>
 #include <stdlib.h>
 using namespace std;
 
@@ -34,7 +34,7 @@ class CPU {
         uint8_t **Gfx;
         uint8_t DalayTimer;
         uint8_t SoundTimer;
-        vector<uint8_t> StackCall;
+        stack<uint8_t> StackCall;
         uint8_t KeyPad[16];
         bool DrawFlag;
 
