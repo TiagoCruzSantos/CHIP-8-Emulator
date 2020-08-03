@@ -28,12 +28,12 @@ CPU::~CPU(){
 }
 
 void CPU::DoCycle(){
-    uint8_t Instruction = this->Memory[this->PC] << 8 | this->Memory[this->PC + 1];
+    uint8_t Instruction = this->Memory[this->PC] << 8 | this->Memory[this->PC + 1]; // Pegar instrução da memória
     this->PC+=2;
 }
 
-void CPU::LoadGame(ifstream *f){
-    int i = 0x200;
+void CPU::LoadGame(ifstream *f){ //Carrega o jogo na memória a partir da posição 512/0x200
+    int i = 0x200; 
     while(!(f->eof())){
         f->read((char *) (&(this->Memory[i])), 1);
         i++;
