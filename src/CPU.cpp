@@ -31,44 +31,94 @@ CPU::~CPU(){
 void CPU::DoCycle(){
     uint16_t Instruction = this->Memory[this->PC] << 8 | this->Memory[this->PC + 1]; // Pegar instrução da memória
     uint16_t Opcode = Instruction & 0xF000;
-    switch(Opcode >> 8){
-        case 0x00:
-            switch(Opcode & 0x00FF){
+    switch(Opcode){
+        case 0x0000:
+            switch(Instruction & 0x00FF){
                 case 0xEE: //Retorno de subrotina
                     break;
                 case 0xE0: //Limpa a tela
                     break;
             }
             break;
-        case 0x10: // Pula para endereço NNN
+        case 0x1000: // 0x1NNN Pula para endereço NNN
             break;
-        case 0x20: // Pulo para subrotina
+        case 0x2000: // 0x2NNN Pulo para subrotina no endereço NNN
             break;
-        case 0x30:
+        case 0x3000: // 0x3XNN Pula a próxima instrução se Reg[X] == NN 
             break;
-        case 0x40:
+        case 0x4000: // 0x4XNN Pula a próxima instrução se Reg[X] != NN
             break;
-        case 0x50:
+        case 0x5000: // 0x5XY0 Pula a próxima instrução se Reg[X] == Reg[Y]
             break;
-        case 0x60:
+        case 0x6000: // 0x6XNN Reg[X] = NN
             break;
-        case 0x70:
+        case 0x7000: // 0x7XNN Reg[X] += NN sem alteração de carry
             break;
-        case 0x80:
+        case 0x8000:
+            switch(Instruction & 0x000F){
+                case 0x0:
+                    break;
+                case 0x1:
+                    break;
+                case 0x2:
+                    break;
+                case 0x3:
+                    break;
+                case 0x4:
+                    break;
+                case 0x5:
+                    break;
+                case 0x6:
+                    break;
+                case 0x7:
+                    break;
+                case 0xE:
+                    break;
+            }
             break;
-        case 0x90:
+        case 0x9000: // 9XY0 Pula a próxima instrução se Reg[X] != Reg[Y]
             break;
-        case 0xA0:
+        case 0xA000: // ANNN I = NNN
             break;
-        case 0xB0:
+        case 0xB000: // BNNN PC = Reg[0] + NNN
             break;
-        case 0xC0:
+        case 0xC000: // CXNN Reg[X] = rand()%(255 + 1) & NN
             break;
-        case 0xD0:
+        case 0xD000: // DXYN Desenhar
             break;
-        case 0xE0:
+        case 0xE000: // KeyPresses
+            switch(Instruction & 0x00FF){
+                case 0x9E:
+                    break;
+                case 0xA1:
+                    break;
+            }
             break;
-        case 0xF0:
+        case 0xF000:
+            switch(Instruction & 0x00FF){
+                case 0x9E:
+                    break;
+                case 0xA1:
+                    break;
+                case 0x07:
+                    break;
+                case 0x0A:
+                    break;
+                case 0x15:
+                    break;
+                case 0x18:
+                    break;
+                case 0x1E:
+                    break;
+                case 0x29:
+                    break;
+                case 0x33:
+                    break;
+                case 0x55:
+                    break;
+                case 0x65:
+                    break;
+            }
             break;
     }
 }
