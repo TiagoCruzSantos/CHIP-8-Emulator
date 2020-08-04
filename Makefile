@@ -1,17 +1,18 @@
 OBJ      := obj
 SRC      := src
 INC      := include
-FLAGS := -g -std=c++17
+SDLFLAG  := -lSDL2
+FLAGS    := -g -std=c++17
 EXE 	 := main.out
 
 main: $(OBJ)/CPU.o $(OBJ)/main.o
-	g++ $(OBJ)/*.o -o $(EXE) $(FLAGS)
+	g++ $(OBJ)/*.o -o $(EXE) $(FLAGS) $(SDLFLAG)
 
 $(OBJ)/main.o: $(SRC)/main.cpp
-	g++ -c $(FLAGS) "$(SRC)/main.cpp" -o "$(OBJ)/main.o"
+	g++ -c "$(SRC)/main.cpp" -o "$(OBJ)/main.o"
 
 $(OBJ)/CPU.o: $(SRC)/CPU.cpp $(INC)/CPU.hpp
-	g++ -c $(FLAGS) "$(SRC)/CPU.cpp" -o "$(OBJ)/CPU.o"
+	g++ -c "$(SRC)/CPU.cpp" -o "$(OBJ)/CPU.o"
 clear:
 	rm $(OBJ)/*.o
 	rm $(EXE)

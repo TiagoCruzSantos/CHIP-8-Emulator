@@ -3,10 +3,11 @@
 #include <iostream>
 #include <fstream>
 #include <stack>
+#include <SDL2/SDL.h>
 #include <stdlib.h>
 using namespace std;
 
-const uint8_t CHIP8_FONTSET[80] = { 
+static uint8_t CHIP8_FONTSET[80] = { 
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
   0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -35,6 +36,7 @@ class CPU {
         uint8_t DalayTimer;
         uint8_t SoundTimer;
         stack<uint8_t> StackCall;
+        int StackAmnt;
         uint8_t KeyPad[16];
         bool DrawFlag;
 
