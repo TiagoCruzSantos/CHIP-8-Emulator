@@ -44,8 +44,8 @@ class CPU {
         CPU();
         ~CPU();
         bool getDrawFlag();
-        void LoadGame(ifstream *f);
-        void DoCycle();
+        int LoadGame(ifstream *f);
+        int DoCycle();
         
 };
 
