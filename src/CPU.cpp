@@ -15,7 +15,7 @@ CPU::CPU(){
     }
     // Carregar fontset na memória
     for(int i = 0; i < 80; i++){
-        this->Memory[i + 0x50] = CHIP8_FONTSET[i];
+        this->Memory[i] = CHIP8_FONTSET[i];
     }
 }
 
@@ -218,32 +218,58 @@ int CPU::DoCycle(){
             break;
         }
         case 0xF000:{
+            uint8_t RegPos = (Instruction & 0x0F00) >> 8;
             switch(Instruction & 0x00FF){
                 case 0x07:{
+                    this->Reg[RegPos] = this->DalayTimer;
+                    this->PC += 2;
                     break;
                 }
-                case 0x0A:{
+                case 0x0A:{ // Esperar por input
                     break;
                 }
                 case 0x15:{
+                    this->DalayTimer = this->Reg[RegPos];
+                    this->PC += 2;
                     break;
                 }
                 case 0x18:{
+                    this->SoundTimer = this->Reg[RegPos];
+                    this->PC += 2;
                     break;
                 }
                 case 0x1E:{
+                    this->I += this->Reg[RegPos];
+                    this->PC += 2;
                     break;
                 }
                 case 0x29:{
+                    this->I = this->Memory[(this->Reg[RegPos] & 0x000F) * 5];
+                    this->PC += 2;
                     break;
                 }
                 case 0x33:{
+                    uint8_t Hundreds = this->Reg[RegPos] / 100;
+                    uint8_t Tens = (this->Reg[RegPos] - Hundreds) / 10;
+                    uint8_t Ones = (this->Reg[RegPos] - Hundreds - Tens);
+                    this->Memory[this->I] = Hundreds;
+                    this->Memory[this->I + 1] = Tens;
+                    this->Memory[this->I + 2] = Ones;
+                    this->PC += 2;
                     break;
                 }
                 case 0x55:{
+                    for(int i = 0; i <= RegPos; i++){
+                        this->Memory[this->I + i] = this->Reg[i];
+                    }
+                    this->PC += 2;
                     break;
                 }
                 case 0x65:{
+                    for(int i = 0; i <= RegPos; i++){
+                        this->Reg[i] = this->Memory[this->I + i];
+                    }
+                    this->PC += 2;
                     break;
                 }
             }
