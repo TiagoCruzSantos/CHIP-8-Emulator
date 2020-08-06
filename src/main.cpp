@@ -12,6 +12,22 @@ int main(int argc, char **argv){
     }
     CPU *Chip8 = new CPU();
     Chip8->LoadGame(&game);
+    char Confirm;
+    for(;;){
+        Chip8->DoCycle();
+        if(Chip8->getDrawFlag()){
+            Chip8->DebugDraw();
+            cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << endl;
+        }
+        
+        /*cin >> Confirm;
+
+        if(Confirm == 'S' || Confirm == 's'){
+            continue;
+        }else{
+            break;
+        }*/
+    }
     delete Chip8;
     game.close();
     return 0;

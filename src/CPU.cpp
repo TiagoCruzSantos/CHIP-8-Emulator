@@ -1,4 +1,7 @@
 #include "../include/CPU.hpp"
+#include <bitset>
+#define HIGHT 32
+#define WIDHT 64
 
 CPU::CPU(){
     this->PC = 0x200; //Começar na posição 0x200 da memória
@@ -9,20 +12,24 @@ CPU::CPU(){
 
     this->Memory = (uint8_t *) calloc(4096, sizeof(uint8_t));
     this->Reg = (uint8_t *) calloc(16, sizeof(uint8_t));
-    this->Gfx = (uint8_t **) malloc(64 * sizeof(uint8_t*));
-    for(int i = 0; i < 64; i++){
-        this->Gfx[i] = (uint8_t *) calloc(32, sizeof(uint8_t));
+    this->KeyPad = (uint8_t *) calloc(16, sizeof(uint8_t));
+    this->Gfx = (uint8_t **) malloc(WIDHT * sizeof(uint8_t*));
+    for(int i = 0; i < WIDHT; i++){
+        this->Gfx[i] = (uint8_t *) calloc(HIGHT, sizeof(uint8_t));
     }
     // Carregar fontset na memória
     for(int i = 0; i < 80; i++){
         this->Memory[i] = CHIP8_FONTSET[i];
     }
+    srand(time(NULL));
+    this->DrawFlag = true;
 }
 
 CPU::~CPU(){
     free(this->Memory);
     free(this->Reg);
-    for(int i = 0; i < 64; i++){
+    free(this->KeyPad);
+    for(int i = 0; i < WIDHT; i++){
         free(this->Gfx[i]);
     }
     free(this->Gfx);
@@ -31,6 +38,7 @@ CPU::~CPU(){
 int CPU::DoCycle(){
     uint16_t Instruction = this->Memory[this->PC] << 8 | this->Memory[this->PC + 1]; // Pegar instrução da memória
     uint16_t Opcode = Instruction & 0xF000;
+    //cout << "Instrução: " << hex << Instruction;
     switch(Opcode){
         case 0x0000:{
             switch(Instruction & 0x00FF){
@@ -41,6 +49,13 @@ int CPU::DoCycle(){
                     break;
                 }
                 case 0xE0:{ //Limpa a tela
+                    for(int i = 0; i < WIDHT; i++){
+                        for(int k = 0; k < HIGHT; k++){
+                            this->Gfx[i][k] = 0x0;
+                        }
+                    }
+                    this->DrawFlag = true;
+                    this->PC += 2;
                     break;
                 }
             }
@@ -186,13 +201,13 @@ int CPU::DoCycle(){
             break;
         }
         case 0xA000:{ // ANNN I = NNN
-            uint8_t Constant = Instruction & 0x0FFF;
+            uint16_t Constant = Instruction & 0x0FFF;
             this->I = Constant;
             this->PC += 2;
             break;
         }
         case 0xB000:{ // BNNN PC = Reg[0] + NNN
-            uint8_t Constant = Instruction & 0x0FFF;
+            uint16_t Constant = Instruction & 0x0FFF;
             this->PC = Reg[0] + Constant;
             break;
         }
@@ -204,14 +219,44 @@ int CPU::DoCycle(){
             break;
         }
         case 0xD000:{ // DXYN Desenhar
+            uint8_t RegPosX = (Instruction & 0x0F00) >> 8;
+            uint8_t RegPosY = (Instruction & 0x00F0) >> 4;
+            uint8_t CordX = this->Reg[RegPosX];
+            uint8_t CordY = this->Reg[RegPosY];
+            uint8_t Height = Instruction & 0x000F;
+            uint8_t Row;
+            this->Reg[0xF] = 0;
+            for(int i = 0; i < Height; i++){
+                Row = this->Memory[this->I + i];
+                for(int k = 0; k < 8; k++){
+                    if((Row & (0x80 >> k)) != 0){
+                        if(this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HIGHT] == 1){
+                            this->Reg[0xF] = 1;
+                        } 
+                        this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HIGHT] ^= 1;
+                    }
+                }
+            }
+            this->DrawFlag = true;
+            this->PC += 2;
             break;
         }
         case 0xE000:{ // KeyPresses
             switch(Instruction & 0x00FF){
                 case 0x9E:{
+                    if(this->KeyPad[this->Reg[(Instruction & 0x0F00) >> 8]] != 0){
+                        this->PC += 4;
+                    }else{
+                        this->PC += 2;
+                    }
                     break;
                 }
                 case 0xA1:{
+                    if(this->KeyPad[this->Reg[(Instruction & 0x0F00) >> 8]] == 0){
+                        this->PC += 4;
+                    }else{
+                        this->PC += 2;
+                    }
                     break;
                 }
             }
@@ -226,6 +271,18 @@ int CPU::DoCycle(){
                     break;
                 }
                 case 0x0A:{ // Esperar por input
+                    bool KeyPress = false;
+                    for(int i = 0; i < 16; i++){
+                        if(this->KeyPad[i] != 0)
+                        {
+                            this->Reg[(Instruction & 0x0F00) >> 8] = i;
+                            KeyPress = true;
+                        }
+                    }
+                    if(!KeyPress){
+                        return 3;
+                    }
+                    this->PC += 2;
                     break;
                 }
                 case 0x15:{
@@ -280,6 +337,16 @@ int CPU::DoCycle(){
             return 2; 
             break;
     }
+    //cout << " DONE" << endl;
+    if(this->DalayTimer > 0){
+        this->DalayTimer--;
+    }
+    if(this->SoundTimer > 0){
+        if(this->SoundTimer == 1){
+            cout << "Beep" << endl;
+        }
+        this->SoundTimer--;
+    }
     return 0;
 }
 
@@ -294,4 +361,25 @@ int CPU::LoadGame(ifstream *f){ //Carrega o jogo na memória a partir da posiç�
 
 bool CPU::getDrawFlag(){
     return this->DrawFlag;
+}
+
+void CPU::DebugDraw(){
+    for(int i = 0; i < HIGHT; i++){
+        cout << '|';
+        for(int k = 0; k < WIDHT; k++){
+            if(this->Gfx[k][i] == 1){
+                cout << '0';
+            }else{
+                cout << ' ';
+            }
+        }
+        cout << '|';
+        cout << endl;
+    }
+    this->DrawFlag = false;
+}
+
+int CPU::UnsetDrawFlag(){
+    this->DrawFlag = false;
+    return 0;
 }

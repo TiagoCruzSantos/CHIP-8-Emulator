@@ -35,9 +35,9 @@ class CPU {
         uint8_t **Gfx;
         uint8_t DalayTimer;
         uint8_t SoundTimer;
-        stack<uint8_t> StackCall;
+        stack<uint16_t> StackCall;
         int StackAmnt;
-        uint8_t KeyPad[16];
+        uint8_t *KeyPad;
         bool DrawFlag;
 
     public:
@@ -46,7 +46,8 @@ class CPU {
         bool getDrawFlag();
         int LoadGame(ifstream *f);
         int DoCycle();
-        
+        int UnsetDrawFlag();
+        void DebugDraw();
 };
 
 #endif
