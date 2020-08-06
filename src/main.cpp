@@ -1,7 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <thread>
 #include "../include/CPU.hpp"
+#include "../include/Video.hpp"
+
 using namespace std;
+using namespace chrono_literals;
+using namespace this_thread;
 
 int main(int argc, char **argv){
     ifstream game;
@@ -10,25 +16,28 @@ int main(int argc, char **argv){
         cout << "Arquivo não pode ser aberto" << endl;
         exit(1);
     }
+    bool Running = true;
+    Video* Screen = new Video(32, 64, 300, 16, 16);
     CPU *Chip8 = new CPU();
+    SDL_Event Event;
     Chip8->LoadGame(&game);
-    char Confirm;
-    for(;;){
+    while(Running){
         Chip8->DoCycle();
         if(Chip8->getDrawFlag()){
-            Chip8->DebugDraw();
-            cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << endl;
+            Screen->DrawScreen(Chip8->getDisplay());
+            Chip8->UnsetDrawFlag();
         }
-        
-        /*cin >> Confirm;
-
-        if(Confirm == 'S' || Confirm == 's'){
-            continue;
-        }else{
-            break;
-        }*/
+        while(SDL_PollEvent(&Event)){
+            switch(Event.type){
+                case SDL_QUIT:
+                    Running = false;
+                break;
+            }
+        }
+        sleep_for(1ms);
     }
     delete Chip8;
+    delete Screen;
     game.close();
     return 0;
 }

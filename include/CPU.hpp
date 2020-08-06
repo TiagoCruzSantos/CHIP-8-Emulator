@@ -48,6 +48,7 @@ class CPU {
         int DoCycle();
         int UnsetDrawFlag();
         void DebugDraw();
+        uint8_t **getDisplay();
 };
 
 #endif

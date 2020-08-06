@@ -1,6 +1,6 @@
 #include "../include/CPU.hpp"
 #include <bitset>
-#define HIGHT 32
+#define HEIGHT 32
 #define WIDHT 64
 
 CPU::CPU(){
@@ -15,11 +15,12 @@ CPU::CPU(){
     this->KeyPad = (uint8_t *) calloc(16, sizeof(uint8_t));
     this->Gfx = (uint8_t **) malloc(WIDHT * sizeof(uint8_t*));
     for(int i = 0; i < WIDHT; i++){
-        this->Gfx[i] = (uint8_t *) calloc(HIGHT, sizeof(uint8_t));
+        this->Gfx[i] = (uint8_t *) calloc(HEIGHT, sizeof(uint8_t));
     }
     // Carregar fontset na memória
     for(int i = 0; i < 80; i++){
         this->Memory[i] = CHIP8_FONTSET[i];
+        //cout << hex << (int) CHIP8_FONTSET[i] << endl;
     }
     srand(time(NULL));
     this->DrawFlag = true;
@@ -50,7 +51,7 @@ int CPU::DoCycle(){
                 }
                 case 0xE0:{ //Limpa a tela
                     for(int i = 0; i < WIDHT; i++){
-                        for(int k = 0; k < HIGHT; k++){
+                        for(int k = 0; k < HEIGHT; k++){
                             this->Gfx[i][k] = 0x0;
                         }
                     }
@@ -226,14 +227,16 @@ int CPU::DoCycle(){
             uint8_t Height = Instruction & 0x000F;
             uint8_t Row;
             this->Reg[0xF] = 0;
+            //cout << "\n";
             for(int i = 0; i < Height; i++){
                 Row = this->Memory[this->I + i];
+                //cout << '|' << bitset<8>(Row) << "|\n";
                 for(int k = 0; k < 8; k++){
                     if((Row & (0x80 >> k)) != 0){
-                        if(this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HIGHT] == 1){
+                        if(this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HEIGHT] == 1){
                             this->Reg[0xF] = 1;
                         } 
-                        this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HIGHT] ^= 1;
+                        this->Gfx[(CordX + k)%WIDHT][(CordY + i)%HEIGHT] ^= 1;
                     }
                 }
             }
@@ -364,7 +367,7 @@ bool CPU::getDrawFlag(){
 }
 
 void CPU::DebugDraw(){
-    for(int i = 0; i < HIGHT; i++){
+    for(int i = 0; i < HEIGHT; i++){
         cout << '|';
         for(int k = 0; k < WIDHT; k++){
             if(this->Gfx[k][i] == 1){
@@ -382,4 +385,8 @@ void CPU::DebugDraw(){
 int CPU::UnsetDrawFlag(){
     this->DrawFlag = false;
     return 0;
+}
+
+uint8_t **CPU::getDisplay(){
+    return this->Gfx;
 }
