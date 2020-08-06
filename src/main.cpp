@@ -32,6 +32,22 @@ int main(int argc, char **argv){
                 case SDL_QUIT:
                     Running = false;
                 break;
+                case SDL_KEYDOWN:{
+                    for(int i = 0; i < 16; i++){
+                        if(Event.key.keysym.sym == KeyMap[i]){
+                            Chip8->KeyDown(i);
+                        }
+                    }
+                    break;
+                }
+                case SDL_KEYUP:{
+                    for(int i = 0; i < 16; i++){
+                        if(Event.key.keysym.sym == KeyMap[i]){
+                            Chip8->KeyUp(i);
+                        }
+                    }
+                    break;
+                }
             }
         }
         sleep_for(1ms);

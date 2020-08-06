@@ -390,3 +390,13 @@ int CPU::UnsetDrawFlag(){
 uint8_t **CPU::getDisplay(){
     return this->Gfx;
 }
+
+int CPU::KeyDown(int Index){
+    this->KeyPad[Index] = 1;
+    return 0;
+}
+
+int CPU::KeyUp(int Index){
+    this->KeyPad[Index] = 0;
+    return 0;
+}
