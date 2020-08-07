@@ -12,7 +12,7 @@ Video::Video(int Height, int Width, int Dalay, int PixelH, int PixelW){
         cerr << "SDL não pode ser iniciado" << endl;
         return;
     }
-    this->Window = SDL_CreateWindow("Chip-8 Emulator", 100, 100, Width * PixelW, Height * PixelH, 0);
+    this->Window = SDL_CreateWindow("ChipOctle", 100, 100, Width * PixelW, Height * PixelH, 0);
     this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(this->Renderer, 0, 0, 0, 255);
     SDL_RenderPresent(this->Renderer);

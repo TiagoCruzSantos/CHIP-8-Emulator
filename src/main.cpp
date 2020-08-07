@@ -50,7 +50,7 @@ int main(int argc, char **argv){
                 }
             }
         }
-        sleep_for(1ms);
+        sleep_for(2ms);
     }
     delete Chip8;
     delete Screen;

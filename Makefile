@@ -3,7 +3,7 @@ SRC      := src
 INC      := include
 SDLFLAG  := -lSDL2
 FLAGS    := -g -std=c++17
-EXE 	 := main.out
+EXE 	 := chipoctle
 
 main: $(OBJ)/CPU.o $(OBJ)/Video.o $(OBJ)/main.o
 	g++ $(OBJ)/*.o -o $(EXE) $(FLAGS) $(SDLFLAG)
