@@ -310,8 +310,8 @@ int CPU::DoCycle(){
                 }
                 case 0x33:{
                     uint8_t Hundreds = this->Reg[RegPos] / 100;
-                    uint8_t Tens = (this->Reg[RegPos] - Hundreds) / 10;
-                    uint8_t Ones = (this->Reg[RegPos] - Hundreds - Tens);
+                    uint8_t Tens = (this->Reg[RegPos] / 10) % 10;
+                    uint8_t Ones = this->Reg[RegPos] % 10;
                     this->Memory[this->I] = Hundreds;
                     this->Memory[this->I + 1] = Tens;
                     this->Memory[this->I + 2] = Ones;
