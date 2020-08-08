@@ -304,7 +304,7 @@ int CPU::DoCycle(){
                     break;
                 }
                 case 0x29:{
-                    this->I = this->Memory[(this->Reg[RegPos] & 0x000F) * 5];
+                    this->I = (this->Reg[RegPos] & 0x000F) * 5;
                     this->PC += 2;
                     break;
                 }
