@@ -1,13 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <chrono>
-#include <thread>
 #include "../include/CPU.hpp"
 #include "../include/Video.hpp"
 
 using namespace std;
-using namespace chrono_literals;
-using namespace this_thread;
 
 int main(int argc, char **argv){
     ifstream game;
@@ -38,6 +34,13 @@ int main(int argc, char **argv){
                             Chip8->KeyDown(i);
                         }
                     }
+                    if(Event.key.keysym.sym == SDLK_F1){
+                        delete Chip8;
+                        Chip8 = new CPU();
+                        game.clear();
+                        game.seekg(0);
+                        Chip8->LoadGame(&game);
+                    }
                     break;
                 }
                 case SDL_KEYUP:{
@@ -50,7 +53,14 @@ int main(int argc, char **argv){
                 }
             }
         }
-        sleep_for(2ms);
+        if(Chip8->getPlaySound()){
+            Chip8->UnsetPlaySound();
+            SDL_PauseAudio(0);
+            SDL_Delay(90);
+            SDL_PauseAudio(1);
+        }else{
+            SDL_Delay(2);
+        }
     }
     delete Chip8;
     delete Screen;

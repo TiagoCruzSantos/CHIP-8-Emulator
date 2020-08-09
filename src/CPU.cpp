@@ -9,6 +9,7 @@ CPU::CPU(){
     this->DalayTimer = 0;
     this->SoundTimer = 0;
     this->StackAmnt = 0;
+    this->PlaySound = false;
 
     this->Memory = (uint8_t *) calloc(4096, sizeof(uint8_t));
     this->Reg = (uint8_t *) calloc(16, sizeof(uint8_t));
@@ -346,7 +347,7 @@ int CPU::DoCycle(){
     }
     if(this->SoundTimer > 0){
         if(this->SoundTimer == 1){
-            cout << "Beep" << endl;
+            this->PlaySound = true;
         }
         this->SoundTimer--;
     }
@@ -399,4 +400,11 @@ int CPU::KeyDown(int Index){
 int CPU::KeyUp(int Index){
     this->KeyPad[Index] = 0;
     return 0;
+}
+
+bool CPU::getPlaySound(){
+    return this->PlaySound;
+}
+void CPU::UnsetPlaySound(){
+    this->PlaySound = false;
 }

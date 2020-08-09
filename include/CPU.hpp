@@ -58,6 +58,7 @@ class CPU {
         int StackAmnt;
         uint8_t *KeyPad;
         bool DrawFlag;
+        bool PlaySound;
 
     public:
         CPU();
@@ -70,6 +71,8 @@ class CPU {
         int KeyDown(int Index);
         int KeyUp(int Index);
         uint8_t **getDisplay();
+        bool getPlaySound();
+        void UnsetPlaySound();
 };
 
 #endif

@@ -16,10 +16,23 @@ Video::Video(int Height, int Width, int Dalay, int PixelH, int PixelW){
     this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(this->Renderer, 0, 0, 0, 255);
     SDL_RenderPresent(this->Renderer);
+    this->AudioSpec.freq = 22000;
+    this->AudioSpec.format = AUDIO_S16SYS;
+    this->AudioSpec.channels = 1;
+    this->AudioSpec.samples = 1024;
+    this->AudioSpec.callback = Video::AudioCallback;
+    this->AudioSpec.userdata = NULL;
+    SDL_OpenAudio(&(this->AudioSpec), NULL);
 }
 
+void Video::AudioCallback(void *UserData, Uint8 *Buffer, int Len){
+    for(int i = 0; i < Len; i++){
+        Buffer[i] = i;
+    }
+}
 
 Video::~Video(){
+    SDL_CloseAudio();
     SDL_Quit();
 }
 
